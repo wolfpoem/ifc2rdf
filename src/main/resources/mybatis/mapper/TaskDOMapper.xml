@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.org.cbim.ifc2rdf.dao.TaskDao">
+    <resultMap id="BaseResultMap" type="cn.org.cbim.ifc2rdf.model.TaskDO">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="file" jdbcType="VARCHAR" property="file"/>
+        <result column="result" jdbcType="OTHER" property="result"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, file, result, status, update_time
+    </sql>
+    <sql id="Base_Field_List">
+        #{id,jdbcType=BIGINT}, #{file,jdbcType=VARCHAR}, #{result,jdbcType=OTHER}, #{status,jdbcType=TINYINT}, #{updateTime,jdbcType=TIMESTAMP}
+    </sql>
+
+    <insert id="createTask" parameterType="cn.org.cbim.ifc2rdf.model.TaskDO" useGeneratedKeys="true" keyProperty="id">
+        insert into ifc2rdf
+        (
+        <include refid="Base_Column_List"/>
+        )
+        values (
+        <include refid="Base_Field_List"/>
+        )
+    </insert>
+
+    <select id="getOldestTask" resultMap="BaseResultMap">
+         select * from ifc2rdf where status = 0   order by update_time desc limit 0,1
+    </select>
+    <select id="getTaskById" resultType="cn.org.cbim.ifc2rdf.model.TaskDO">
+        select * from ifc2rdf where id = #{id}
+    </select>
+
+    <update id="changeStatus">
+        update ifc2rdf
+        <set>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="result != null">
+                result = #{result},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+
+</mapper>
